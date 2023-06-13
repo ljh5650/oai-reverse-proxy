@@ -134,12 +134,18 @@ const openaiProxy = createQueueMiddleware(
 
 const openaiRouter = Router();
 // Fix paths because clients don't consistently use the /v1 prefix.
+
 openaiRouter.use((req, _res, next) => {
   if (!req.path.startsWith("/v1/")) {
     req.url = `/v1${req.url}`;
   }
+  if(req.body.model === "gpt-3.5-turbo") {
+    req.body.model = "gpt-3.5-turbo-16k-0613"
+  }
+  console.log("openaiRouter", req.body.model)
   next();
 });
+
 openaiRouter.get("/v1/models", handleModelRequest);
 openaiRouter.post(
   "/v1/chat/completions",
